@@ -374,12 +374,12 @@ export default function App() {
 
             {shape === "rect" ? (
               <>
-                <div><SizeSelect label="Сечение короба (Ш×В)" presets={PRESETS} value={[w1, h1]} onChange={([a,b])=>{setW1(a);setH1(b);}} /></div>
+                <div className="col-span-2 md:col-span-1"><SizeSelect label="Сечение короба (Ш×В)" presets={PRESETS} value={[w1, h1]} onChange={([a,b])=>{setW1(a);setH1(b);}} /></div>
                 <div className={diffSection ? "" : "hidden"}><SizeSelect label="Выходное сечение (Ш×В)" presets={PRESETS} value={[w2, h2]} onChange={([a,b])=>{setW2(a);setH2(b);}} /></div>
               </>
             ) : (
               <>
-                <div><SizeSelect label="Диаметр короба Ø" presets={ROUND_PRESETS} value={d1} onChange={setD1} /></div>
+                <div className="col-span-2 md:col-span-1"><SizeSelect label="Диаметр короба Ø" presets={ROUND_PRESETS} value={d1} onChange={setD1} /></div>
                 <div className={diffSection ? "" : "hidden"}><SizeSelect label="Выходной Ø" presets={ROUND_PRESETS} value={d2} onChange={setD2} /></div>
               </>
             )}
