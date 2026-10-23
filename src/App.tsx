@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 // ---------- Утилиты ----------
 const MM = "мм";
@@ -258,16 +258,34 @@ function DuctView({ state, calc, plane }) {
 
 // ---------- UI-элементы ----------
 function NumField({ label, value, onChange, step = 10, min = 0 }) {
+  // Позволяем временно оставить поле пустым при редактировании, чтобы новый ввод
+  // не превращался в строку вида «0 250».
+  const [draft, setDraft] = useState(String(value));
+
+  useEffect(() => {
+    setDraft(String(value));
+  }, [value]);
+
   return (
     <label className="flex flex-col gap-1 text-sm">
       <span className="text-slate-600 font-medium">{label}</span>
       <input
         type="number"
         inputMode="numeric"
-        value={value}
+        value={draft}
         step={step}
         min={min}
-        onChange={(e) => onChange(Math.max(0, Number(e.target.value)))}
+        onChange={(e) => {
+          const next = e.target.value;
+          setDraft(next);
+          if (next !== "") onChange(Math.max(min, Number(next)));
+        }}
+        onBlur={() => {
+          if (draft === "") {
+            setDraft(String(min));
+            onChange(min);
+          }
+        }}
         className="rounded-lg border border-slate-300 px-3 py-2.5 w-full text-base focus:border-sky-500 focus:outline-none"
       />
     </label>
@@ -375,12 +393,12 @@ export default function App() {
             {shape === "rect" ? (
               <>
                 <div className="col-span-2 md:col-span-1"><SizeSelect label="Сечение короба (Ш×В)" presets={PRESETS} value={[w1, h1]} onChange={([a,b])=>{setW1(a);setH1(b);}} /></div>
-                <div className={diffSection ? "" : "hidden"}><SizeSelect label="Выходное сечение (Ш×В)" presets={PRESETS} value={[w2, h2]} onChange={([a,b])=>{setW2(a);setH2(b);}} /></div>
+                <div className={diffSection ? "col-span-2 md:col-span-1" : "hidden"}><SizeSelect label="Выходное сечение (Ш×В)" presets={PRESETS} value={[w2, h2]} onChange={([a,b])=>{setW2(a);setH2(b);}} /></div>
               </>
             ) : (
               <>
                 <div className="col-span-2 md:col-span-1"><SizeSelect label="Диаметр короба Ø" presets={ROUND_PRESETS} value={d1} onChange={setD1} /></div>
-                <div className={diffSection ? "" : "hidden"}><SizeSelect label="Выходной Ø" presets={ROUND_PRESETS} value={d2} onChange={setD2} /></div>
+                <div className={diffSection ? "col-span-2 md:col-span-1" : "hidden"}><SizeSelect label="Выходной Ø" presets={ROUND_PRESETS} value={d2} onChange={setD2} /></div>
               </>
             )}
 
